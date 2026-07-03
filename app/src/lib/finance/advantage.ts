@@ -39,9 +39,8 @@ export interface AdvantageResult {
   points: AdvantagePoint[];
   diyRate: number;
   klayRate: number;
-  netEdge: number; // klayRate - diyRate
-  fee: number;
-  components: { label: string; value: number; kind: "gain" | "fee" }[];
+  netEdge: number; // klayRate - diyRate, net of all costs
+  components: { label: string; value: number }[];
 }
 
 export function klayAdvantage(
@@ -75,14 +74,14 @@ export function klayAdvantage(
     diyRate,
     klayRate,
     netEdge: klayRate - diyRate,
-    fee: KLAY_FEE,
+    // Sources of gross alpha. The Klay wealth path and netEdge are always
+    // net of all management costs — the fee is inside the math, not itemised.
     components: [
-      { label: "Behaviour gap avoided", value: a.behaviourGap, kind: "gain" },
-      { label: "Institutional pricing vs retail", value: a.diyProductDrag, kind: "gain" },
-      { label: "Access: AIFs, primaries, direct bonds", value: a.accessAlpha, kind: "gain" },
-      { label: "Disciplined rebalancing", value: a.rebalancingAlpha, kind: "gain" },
-      { label: "Tax-aware structuring", value: a.taxAlpha, kind: "gain" },
-      { label: "Klay advisory fee", value: -KLAY_FEE, kind: "fee" },
+      { label: "Behaviour gap avoided", value: a.behaviourGap },
+      { label: "Institutional pricing vs retail", value: a.diyProductDrag },
+      { label: "Access: AIFs, primaries, direct bonds", value: a.accessAlpha },
+      { label: "Disciplined rebalancing", value: a.rebalancingAlpha },
+      { label: "Tax-aware structuring", value: a.taxAlpha },
     ],
   };
 }
