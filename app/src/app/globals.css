@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/*
+ * Klay brand tokens — placeholder palette in the spirit of a legacy PMS house
+ * (deep navy + muted gold on warm ivory). Swap the values in this block when
+ * the official marketing-deck colors land; nothing else needs to change.
+ */
+:root {
+  --page: #f6f5f1;
+  --surface: #fdfcfa;
+  --surface-raised: #ffffff;
+  --ink: #14171c;
+  --ink-secondary: #565349;
+  --ink-muted: #8a877f;
+  --hairline: #e3e1d8;
+  --hairline-strong: #c9c6bb;
+  --brand-navy: #0e2038;
+  --brand-navy-ink: #f2efe6;
+  --brand-gold: #b08a2e;
+  --brand-gold-soft: #f0e6cd;
+  --good: #0e7a0e;
+  --bad: #c03535;
+
+  --eq: #2a78d6;
+  --fi: #1baf7a;
+  --alt: #4a3aa7;
+  --tac: #eda100;
+  --cash: #898781;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0b1420;
+    --surface: #101c2e;
+    --surface-raised: #16243a;
+    --ink: #f4f3ee;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #8f9aa8;
+    --hairline: #22334c;
+    --hairline-strong: #33465f;
+    --brand-navy: #0e2038;
+    --brand-navy-ink: #f2efe6;
+    --brand-gold: #d4af4e;
+    --brand-gold-soft: #2c2613;
+    --good: #35b04a;
+    --bad: #e05c5c;
+
+    --eq: #3987e5;
+    --fi: #199e70;
+    --alt: #9085e9;
+    --tac: #c98500;
+    --cash: #9a978f;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink-secondary);
+  --color-ink3: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-hairline2: var(--hairline-strong);
+  --color-navy: var(--brand-navy);
+  --color-navyink: var(--brand-navy-ink);
+  --color-gold: var(--brand-gold);
+  --color-goldsoft: var(--brand-gold-soft);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.font-display {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Range sliders used in the Rebalancing Studio */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hairline-strong);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-gold);
+  border: 2px solid var(--surface-raised);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-gold);
+  border: 2px solid var(--surface-raised);
+  cursor: pointer;
+}
