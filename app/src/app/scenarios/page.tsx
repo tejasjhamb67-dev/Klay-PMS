@@ -3,10 +3,12 @@
 import { useMemo, useState } from "react";
 import { HBar, SleeveLegend, StackedWeightBar, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader } from "@/components/ui";
+import { CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { TooltipShell } from "@/components/charts";
 import { useClient } from "@/components/client-context";
 import { SLEEVES } from "@/lib/finance/assumptions";
-import { sleeveValues, totalValue } from "@/lib/finance/engine";
-import { inr, parseInr, pct } from "@/lib/finance/format";
+import { analyseIncomeShock, IncomeShock, sleeveValues, totalValue } from "@/lib/finance/engine";
+import { inr, inrAxis, parseInr, pct } from "@/lib/finance/format";
 import {
   LIFE_EVENT_PRESETS,
   MacroShock,
@@ -51,6 +53,26 @@ export default function ScenariosPage() {
   const [stressId, setStressId] = useState(SCENARIO_LIBRARY[0].id);
   const [custom, setCustom] = useState<MacroShock>({ ...ZERO_SHOCK, equity: -0.25 });
 
+  // ---- income shock state ----
+  const incomeShocks = useMemo(() => {
+    const out: { label: string; shock: IncomeShock }[] = [];
+    const kinds = new Set(portfolio.cashflows.filter((c) => c.contingent).map((c) => c.contingent));
+    if (kinds.has("salary")) {
+      out.push(
+        { label: "Salary stops (2 years)", shock: { target: "salary", factor: 0, years: 2 } },
+        { label: "Salary halved (3 years)", shock: { target: "salary", factor: 0.5, years: 3 } }
+      );
+    }
+    if (kinds.has("business")) {
+      out.push(
+        { label: "Business dividends stop (2 years)", shock: { target: "business", factor: 0, years: 2 } },
+        { label: "Dividends halved (3 years)", shock: { target: "business", factor: 0.5, years: 3 } }
+      );
+    }
+    return out;
+  }, [portfolio.cashflows]);
+  const [incomeIdx, setIncomeIdx] = useState(0);
+
   const perYear = parseInr(amountText) ?? 0;
   const backdrop: NamedScenario | null = useMemo(
     () => SCENARIO_LIBRARY.find((s) => s.id === backdropId) ?? null,
@@ -82,6 +104,28 @@ export default function ScenariosPage() {
   const stress = useMemo(() => runShock(values, activeShock), [values, activeShock]);
   const maxImpact = Math.max(...stress.sleeveImpacts.map((i) => Math.abs(i.amount)), 1);
   const liq = plan?.liquidity ?? null;
+
+  const idx = Math.min(incomeIdx, Math.max(incomeShocks.length - 1, 0));
+  const weights = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(values).map(([s, v]) => [s, total > 0 ? v / total : 0])
+      ) as Record<keyof typeof values, number>,
+    [values, total]
+  );
+  const income = useMemo(
+    () =>
+      incomeShocks.length > 0
+        ? analyseIncomeShock(
+            total,
+            weights,
+            values.cash + values.fixedIncome,
+            portfolio.cashflows,
+            incomeShocks[idx].shock
+          )
+        : null,
+    [incomeShocks, idx, total, weights, values, portfolio.cashflows]
+  );
 
   const slider = (
     label: string,
@@ -423,6 +467,93 @@ export default function ScenariosPage() {
           </div>
         </div>
       </Card>
+
+      {/* ================= Income shocks ================= */}
+      {income && (
+        <Card className="mt-6">
+          <CardTitle hint="What happens to the plan when an income stream — not the market — is what breaks">
+            Income shocks
+          </CardTitle>
+          <div className="flex gap-1.5 flex-wrap mb-4">
+            {incomeShocks.map((s, i) => (
+              <button
+                key={s.label}
+                onClick={() => setIncomeIdx(i)}
+                className={`px-2.5 py-1.5 rounded text-xs border transition-colors ${
+                  i === idx ? "bg-navy text-navyink border-navy" : "border-hairline2 text-ink2 hover:bg-raised"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="grid lg:grid-cols-2 gap-6">
+            <div>
+              <ResponsiveContainer width="100%" height={240}>
+                <ComposedChart
+                  data={income.base.map((p, i) => ({ year: p.year, base: p.median, shocked: income.shocked[i].median }))}
+                  margin={{ top: 8, right: 12, bottom: 4, left: 8 }}
+                >
+                  <CartesianGrid stroke={theme.grid} strokeWidth={1} vertical={false} />
+                  <XAxis dataKey="year" tickFormatter={(y) => `${y}y`} stroke={theme.axis} tick={{ fill: theme.inkMuted, fontSize: 11 }} tickLine={false} />
+                  <YAxis tickFormatter={(v) => inrAxis(v)} stroke="transparent" tick={{ fill: theme.inkMuted, fontSize: 11 }} tickLine={false} width={64} />
+                  <Line dataKey="base" stroke={theme.accent} strokeWidth={2} dot={false} isAnimationActive={false} />
+                  <Line dataKey="shocked" stroke={theme.bad} strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      const p = payload[0].payload as { base: number; shocked: number };
+                      return (
+                        <TooltipShell
+                          title={`Year ${label}`}
+                          rows={[
+                            { dot: theme.accent, label: "Plan on track", value: inr(p.base) },
+                            { dot: theme.bad, label: "With shock", value: inr(p.shocked) },
+                            { label: "Difference", value: inr(p.shocked - p.base, { signed: true }) },
+                          ]}
+                        />
+                      );
+                    }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+              <div className="flex gap-4 text-xs text-ink2 mt-1">
+                <span className="flex items-center"><span className="w-4 h-0.5 mr-1.5 rounded" style={{ background: theme.accent }} /> Plan on track</span>
+                <span className="flex items-center"><span className="w-4 border-t-2 border-dashed mr-1.5" style={{ borderColor: theme.bad }} /> {incomeShocks[idx].label}</span>
+              </div>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between border-b border-hairline pb-2.5">
+                <span className="text-ink2">Net annual flow today — plan</span>
+                <span className={`tnum ${income.netFlowNowBase >= 0 ? "text-good" : "text-ink"}`}>{inr(income.netFlowNowBase, { signed: true })}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-hairline pb-2.5">
+                <span className="text-ink2">Net annual flow — under shock</span>
+                <span className={`tnum font-medium ${income.netFlowNowShocked >= 0 ? "text-good" : "text-bad"}`}>{inr(income.netFlowNowShocked, { signed: true })}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-hairline pb-2.5">
+                <span className="text-ink2">Expected wealth in 10y — plan</span>
+                <span className="tnum text-ink">{inr(income.wealth10yBase)}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-hairline pb-2.5">
+                <span className="text-ink2">Expected wealth in 10y — under shock</span>
+                <span className="tnum text-ink">{inr(income.wealth10yShocked)} <span className={income.delta10y < 0 ? "text-bad" : "text-good"}>({inr(income.delta10y, { signed: true })})</span></span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-ink">Runway before any equity is sold</span>
+                <span className="tnum font-semibold text-ink">
+                  {income.runwayYears === Infinity ? "Not needed — still cash-positive" : `${income.runwayYears.toFixed(1)} years`}
+                </span>
+              </div>
+              <Disclaimer>
+                Runway is cash plus fixed income divided by the shocked net outflow: how long the safe sleeves fund
+                life before a single growth asset must be sold at a bad time. This is why the IC sizes fixed income
+                to expenses, not to a formula.
+              </Disclaimer>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

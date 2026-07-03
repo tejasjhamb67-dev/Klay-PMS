@@ -5,7 +5,14 @@ import { FanChart, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
 import { useClient } from "@/components/client-context";
 import { getAssumptions, SLEEVES } from "@/lib/finance/assumptions";
-import { currentWeights, portfolioStats, projectWealth, sleeveGrowthRates, totalValue } from "@/lib/finance/engine";
+import {
+  currentWeights,
+  netFlowAt,
+  portfolioStats,
+  projectWealthWithFlows,
+  sleeveGrowthRates,
+  totalValue,
+} from "@/lib/finance/engine";
 import { inr, pct } from "@/lib/finance/format";
 import { SLEEVE_IDS } from "@/lib/finance/types";
 
@@ -19,17 +26,19 @@ export default function ProjectionsPage() {
   const growth = sleeveGrowthRates(portfolio.holdings);
   const stats = portfolioStats(weights);
   const [years, setYears] = useState(10);
+  const [includeFlows, setIncludeFlows] = useState(true);
 
-  const points = useMemo(() => projectWealth(total, weights, years), [total, weights, years]);
+  const flows = includeFlows ? portfolio.cashflows : [];
+  const netNow = netFlowAt(portfolio.cashflows, 0);
+  const points = useMemo(
+    () => projectWealthWithFlows(total, weights, years, flows),
+    [total, weights, years, flows]
+  );
   const last = points[points.length - 1];
   const checkpoints = PRESETS.filter((y) => y <= years);
   const checkpointRows = useMemo(
-    () =>
-      checkpoints.map((y) => {
-        const p = projectWealth(total, weights, y, { stepsPerYear: 1 });
-        return { years: y, ...p[p.length - 1] };
-      }),
-    [checkpoints, total, weights]
+    () => checkpoints.map((y) => ({ years: y, ...points[Math.min(y, points.length - 1)] })),
+    [checkpoints, points]
   );
 
   return (
@@ -84,11 +93,58 @@ export default function ProjectionsPage() {
         </div>
         <FanChart points={points} markers={checkpoints} />
         <Disclaimer>
-          Projections compound today’s value of {inr(total)} at the geometric expected return of your current
-          allocation. Bands reflect the statistical range of outcomes given the portfolio’s volatility — they are
-          illustrative, not guaranteed.
+          Simulated from today’s value of {inr(total)} across 1,500 market paths at your current allocation
+          {includeFlows && portfolio.cashflows.length > 0 ? ", with your cashflow schedule layered on every path" : ""}.
+          Bands reflect the statistical range of outcomes — illustrative, not guaranteed.
         </Disclaimer>
       </Card>
+
+      {portfolio.cashflows.length > 0 && (
+        <Card className="mb-6">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <CardTitle hint="Salaries, SIPs, expenses and planned draws — layered onto every projected path">
+              Cashflow schedule
+            </CardTitle>
+            <label className="flex items-center gap-2 text-xs text-ink2 cursor-pointer">
+              <input type="checkbox" checked={includeFlows} onChange={(e) => setIncludeFlows(e.target.checked)} />
+              Include in projection
+            </label>
+          </div>
+          <div className="grid md:grid-cols-2 gap-x-8">
+            {portfolio.cashflows.map((cf) => (
+              <div key={cf.id} className="flex items-center justify-between text-sm border-b border-hairline py-2">
+                <span className="text-ink pr-3">
+                  {cf.label}
+                  {cf.contingent && (
+                    <span className="ml-2 text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-accentsoft text-ink2 whitespace-nowrap">
+                      {cf.contingent}-linked
+                    </span>
+                  )}
+                </span>
+                <span className="text-xs text-ink3 shrink-0 mr-4">
+                  {cf.startYear === 0 && cf.endYear === null
+                    ? "ongoing"
+                    : cf.endYear === null
+                      ? `from year ${cf.startYear}`
+                      : cf.endYear - cf.startYear === 1
+                        ? `year ${cf.startYear}`
+                        : `years ${cf.startYear}–${cf.endYear - 1}`}
+                  {cf.growthRate > 0 ? ` · +${(cf.growthRate * 100).toFixed(0)}%/yr` : ""}
+                </span>
+                <span className={`tnum shrink-0 ${cf.kind === "inflow" ? "text-good" : "text-bad"}`}>
+                  {cf.kind === "inflow" ? "+" : "−"}{inr(cf.amountPerYear)}/yr
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between text-sm mt-3">
+            <span className="text-ink font-medium">Net this year</span>
+            <span className={`tnum font-semibold ${netNow >= 0 ? "text-good" : "text-bad"}`}>
+              {inr(netNow, { signed: true })}
+            </span>
+          </div>
+        </Card>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>

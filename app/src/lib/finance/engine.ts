@@ -1,5 +1,6 @@
 import { CORRELATIONS, getAssumptions, RISK_FREE_RATE } from "./assumptions";
 import {
+  Cashflow,
   ClientPortfolio,
   Holding,
   PortfolioStats,
@@ -126,4 +127,117 @@ export function projectWealth(
 export function medianValueAt(startValue: number, weights: Weights, years: number, annualDrag = 0): number {
   const stats = portfolioStats(weights);
   return startValue * Math.exp((stats.geometricReturn - annualDrag) * years);
+}
+
+// ---------- Cashflow-aware projections (Monte Carlo) ----------
+
+/** Income-shock overlay: scale contingent flows by `factor` for `years`. */
+export interface IncomeShock {
+  target: "salary" | "business";
+  factor: number; // 0 = stops entirely, 0.5 = halved
+  years: number;
+}
+
+/** Signed net flow during year index `y` (0 = the coming year), in rupees. */
+export function netFlowAt(cashflows: Cashflow[], y: number, shock?: IncomeShock): number {
+  let net = 0;
+  for (const cf of cashflows) {
+    if (y < cf.startYear || (cf.endYear !== null && y >= cf.endYear)) continue;
+    let amount = cf.amountPerYear * Math.pow(1 + cf.growthRate, y - cf.startYear);
+    if (shock && cf.contingent === shock.target && y < shock.years) amount *= shock.factor;
+    net += cf.kind === "inflow" ? amount : -amount;
+  }
+  return net;
+}
+
+// Deterministic RNG so charts are stable across renders.
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Wealth projection with cashflows layered on the stochastic growth path.
+ * Closed-form lognormal breaks once money moves in and out, so we simulate:
+ * yearly steps, log-returns ~ N(geometric, sigma), flows landing mid-year,
+ * paths floored at zero (ruin is allowed to show up, not hidden).
+ */
+export function projectWealthWithFlows(
+  startValue: number,
+  weights: Weights,
+  years: number,
+  cashflows: Cashflow[],
+  options?: { shock?: IncomeShock; paths?: number; seed?: number }
+): ProjectionPoint[] {
+  const stats = portfolioStats(weights);
+  const g = stats.geometricReturn;
+  const sigma = stats.volatility;
+  const nPaths = options?.paths ?? 1500;
+  const rand = mulberry32(options?.seed ?? 20260703);
+
+  const values = new Float64Array(nPaths).fill(startValue);
+  const points: ProjectionPoint[] = [
+    { year: 0, median: startValue, p10: startValue, p25: startValue, p75: startValue, p90: startValue },
+  ];
+
+  for (let t = 1; t <= years; t++) {
+    const flow = netFlowAt(cashflows, t - 1, options?.shock);
+    for (let p = 0; p < nPaths; p++) {
+      // Box-Muller
+      const u1 = Math.max(rand(), 1e-12);
+      const u2 = rand();
+      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      const r = g + sigma * z;
+      values[p] = Math.max(0, values[p] * Math.exp(r) + flow * Math.exp(r / 2));
+    }
+    const sorted = Array.from(values).sort((a, b) => a - b);
+    const q = (frac: number) => sorted[Math.min(nPaths - 1, Math.floor(frac * nPaths))];
+    points.push({ year: t, median: q(0.5), p10: q(0.1), p25: q(0.25), p75: q(0.75), p90: q(0.9) });
+  }
+  return points;
+}
+
+export interface IncomeShockResult {
+  base: ProjectionPoint[];
+  shocked: ProjectionPoint[];
+  netFlowNowBase: number;
+  netFlowNowShocked: number;
+  wealth10yBase: number;
+  wealth10yShocked: number;
+  delta10y: number;
+  /** Years of net spending covered by cash + fixed income if the shock hits
+   *  today — how long before a single equity unit must be sold. Infinity if
+   *  the shocked flows are still net positive. */
+  runwayYears: number;
+}
+
+/** What a job loss / dividend cut does to the wealth path and to liquidity. */
+export function analyseIncomeShock(
+  startValue: number,
+  weights: Weights,
+  liquidAssets: number,
+  cashflows: Cashflow[],
+  shock: IncomeShock,
+  years = 15
+): IncomeShockResult {
+  const base = projectWealthWithFlows(startValue, weights, years, cashflows);
+  const shocked = projectWealthWithFlows(startValue, weights, years, cashflows, { shock });
+  const at = (pts: ProjectionPoint[], y: number) => pts[Math.min(y, pts.length - 1)].median;
+  const netFlowNowShocked = netFlowAt(cashflows, 0, shock);
+  return {
+    base,
+    shocked,
+    netFlowNowBase: netFlowAt(cashflows, 0),
+    netFlowNowShocked,
+    wealth10yBase: at(base, 10),
+    wealth10yShocked: at(shocked, 10),
+    delta10y: at(shocked, 10) - at(base, 10),
+    runwayYears: netFlowNowShocked >= 0 ? Infinity : liquidAssets / -netFlowNowShocked,
+  };
 }
