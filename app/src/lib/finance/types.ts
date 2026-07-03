@@ -53,6 +53,26 @@ export interface ClientPortfolio {
 /** Weights by sleeve, summing to 1. */
 export type Weights = Record<SleeveId, number>;
 
+/**
+ * A recurring (or one-off) money movement in or out of the portfolio:
+ * director salary, SIP additions, living expenses, education draws,
+ * distributions. `contingent` ties an inflow to its source so income-shock
+ * scenarios (job loss, dividend cut) can switch it off realistically.
+ */
+export interface Cashflow {
+  id: string;
+  label: string;
+  kind: "inflow" | "outflow";
+  amountPerYear: number; // INR, today's terms
+  /** Year offset when the flow begins (0 = already running) */
+  startYear: number;
+  /** Year offset when the flow stops, exclusive. null = runs indefinitely */
+  endYear: number | null;
+  /** Annual escalation, e.g. 0.08 salary growth, 0.06 expense inflation */
+  growthRate: number;
+  contingent?: "salary" | "business" | null;
+}
+
 /** A client relationship as shown in the portal, sourced from IC notes. */
 export interface ClientProfile extends ClientPortfolio {
   id: string;
@@ -62,6 +82,8 @@ export interface ClientProfile extends ClientPortfolio {
   horizon: string;
   /** One-line investment thesis from the IC note */
   thesis: string;
+  /** Recurring inflows/outflows that shape the wealth path */
+  cashflows: Cashflow[];
 }
 
 export interface PortfolioStats {

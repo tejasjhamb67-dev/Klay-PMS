@@ -11,6 +11,12 @@ import { ClientProfile } from "../finance/types";
 export const CLIENTS: ClientProfile[] = [
   {
     id: "arvind",
+    cashflows: [
+      { id: "cf1", label: "Director income — invested surplus", kind: "inflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.05, contingent: "business" },
+      { id: "cf2", label: "Household expenses", kind: "outflow", amountPerYear: 2.2e6, startYear: 0, endYear: null, growthRate: 0.06 },
+      { id: "cf3", label: "Son's education (Year 2)", kind: "outflow", amountPerYear: 3.6e6, startYear: 2, endYear: 3, growthRate: 0 },
+      { id: "cf4", label: "Daughter's education (Year 3)", kind: "outflow", amountPerYear: 3.0e6, startYear: 3, endYear: 4, growthRate: 0 },
+    ],
     clientName: "Arvind Jain",
     mandate: "Pre-Exit Business Owner",
     horizon: "6–7 years (pre-exit)",
@@ -31,6 +37,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "suresh",
+    cashflows: [
+      { id: "cf1", label: "Family drawdown (0.7% WR)", kind: "outflow", amountPerYear: 3.6e6, startYear: 0, endYear: null, growthRate: 0.06 },
+    ],
     clientName: "Suresh Dalmia",
     mandate: "Post-Exit First-Time Investor",
     horizon: "30+ years (perpetuity-lite)",
@@ -46,6 +55,10 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "karan",
+    cashflows: [
+      { id: "cf1", label: "AED salary savings — SIP", kind: "inflow", amountPerYear: 1.65e6, startYear: 0, endYear: null, growthRate: 0.08, contingent: "salary" },
+      { id: "cf2", label: "Children's education (Years 7–8)", kind: "outflow", amountPerYear: 2.5e6, startYear: 7, endYear: 9, growthRate: 0 },
+    ],
     clientName: "Karan Nair",
     mandate: "NRI UAE Accumulator",
     horizon: "8–10 years (accumulation)",
@@ -62,6 +75,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "priya",
+    cashflows: [
+      { id: "cf1", label: "USD salary savings — remitted", kind: "inflow", amountPerYear: 2.0e6, startYear: 0, endYear: null, growthRate: 0.07, contingent: "salary" },
+    ],
     clientName: "Priya Krishnaswamy",
     mandate: "NRI US Citizen — PFIC-Constrained",
     horizon: "12–15 years",
@@ -78,6 +94,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "meena",
+    cashflows: [
+      { id: "cf1", label: "Living expenses", kind: "outflow", amountPerYear: 1.2e6, startYear: 0, endYear: null, growthRate: 0.06 },
+    ],
     clientName: "Meena Agarwal",
     mandate: "Retiree Widow — Two-Bucket",
     horizon: "20+ years (income first)",
@@ -95,6 +114,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "bose",
+    cashflows: [
+      { id: "cf1", label: "Lifestyle & gifting", kind: "outflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.05 },
+    ],
     clientName: "Rajiv & Sunita Bose",
     mandate: "Retired Couple — Legacy Mandate",
     horizon: "25+ years (multi-generation)",
@@ -112,6 +134,10 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "haresh",
+    cashflows: [
+      { id: "cf1", label: "Business dividends", kind: "inflow", amountPerYear: 1.5e7, startYear: 0, endYear: null, growthRate: 0.05, contingent: "business" },
+      { id: "cf2", label: "Family office expenses", kind: "outflow", amountPerYear: 6.0e6, startYear: 0, endYear: null, growthRate: 0.06 },
+    ],
     clientName: "Haresh Shah",
     mandate: "Family Office — Diamond Export",
     horizon: "10+ years (business-linked)",
@@ -130,6 +156,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "mehta",
+    cashflows: [
+      { id: "cf1", label: "Family distributions (2% WR)", kind: "outflow", amountPerYear: 4.0e7, startYear: 0, endYear: null, growthRate: 0.05 },
+    ],
     clientName: "Mehta Family",
     mandate: "Family Office — Perpetuity",
     horizon: "Perpetual (multi-generation)",
@@ -148,6 +177,10 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "ananya",
+    cashflows: [
+      { id: "cf1", label: "Salary savings", kind: "inflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.1, contingent: "salary" },
+      { id: "cf2", label: "ESOP vesting (4 more years)", kind: "inflow", amountPerYear: 2.5e6, startYear: 0, endYear: 4, growthRate: 0, contingent: "salary" },
+    ],
     clientName: "Ananya Reddy",
     mandate: "HNI Salaried — ESOP Concentration",
     horizon: "15+ years (accumulation)",
@@ -165,6 +198,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "arjun",
+    cashflows: [
+      { id: "cf1", label: "Living expenses", kind: "outflow", amountPerYear: 5.0e6, startYear: 0, endYear: null, growthRate: 0.06 },
+    ],
     clientName: "Arjun Khanna",
     mandate: "Sudden Wealth — Two-Bucket",
     horizon: "25+ years",
