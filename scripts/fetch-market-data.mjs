@@ -10,14 +10,14 @@
  *   India 10Y G-sec, CPI ............... FRED CSV (no key required)
  *   Nifty P/E & dividend yield ......... NSE (best-effort; prior if blocked)
  *
- * Output: app/public/data/market-snapshot.json  (committed by the Action)
+ * Output: public/data/market-snapshot.json  (committed by the Action)
  * Run locally: node scripts/fetch-market-data.mjs [--dry-run]
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const OUT = resolve(import.meta.dirname, "../app/public/data/market-snapshot.json");
+const OUT = resolve(import.meta.dirname, "../public/data/market-snapshot.json");
 const DRY = process.argv.includes("--dry-run");
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; KlayPMS/1.0)" };
 

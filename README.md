@@ -15,8 +15,8 @@ A client-facing portfolio intelligence application for **Klay Capital**: a moder
 ## Architecture
 
 ```
-app/                      Next.js 15 + TypeScript + Tailwind v4 + Recharts
-  src/lib/finance/        Pure, testable financial engine (no UI)
+/                         Next.js 15 + TypeScript + Tailwind v4 + Recharts
+src/lib/finance/        Pure, testable financial engine (no UI)
     assumptions.ts        Capital market assumptions, correlations, fee — single source of truth
     engine.ts             Covariance stats, lognormal projections, risk contributions
     rebalance.ts          Mix comparison, renormalisation, implied trades
@@ -24,8 +24,8 @@ app/                      Next.js 15 + TypeScript + Tailwind v4 + Recharts
     scenario.ts           Liquidity optimiser + stress scenarios
     format.ts             ₹ Cr/L formatting & parsing
   src/lib/data/client.ts  Demo relationship (mirrors a future custodian feed)
-  src/lib/theme.ts        Chart palette (CVD-validated, light + dark)
-  src/app/                One route per product section
+src/lib/theme.ts        Chart palette (CVD-validated, light + dark)
+src/app/                One route per product section
 ```
 
 All computation currently runs client-side against a demo portfolio. The engine is deliberately separated from the UI so a real data layer (custodian/fund-accounting feed, auth, per-client API) can replace `lib/data` without touching the product.
@@ -35,7 +35,7 @@ All computation currently runs client-side against a demo portfolio. The engine 
 `scripts/fetch-market-data.mjs` runs in GitHub Actions every trading day at 19:03 IST
 (`.github/workflows/market-data.yml`): it pulls closes from Yahoo Finance (Stooq/FRED/NSE fallbacks),
 derives forward-looking expected returns per sleeve (building-block method — see
-`docs/MARKET-DATA-ARCHITECTURE.md`), validates, and commits `app/public/data/market-snapshot.json`.
+`docs/MARKET-DATA-ARCHITECTURE.md`), validates, and commits `public/data/market-snapshot.json`.
 The app merges the snapshot over the static priors at load; if the feed is stale or missing, the
 priors keep every screen alive. **Note: scheduled workflows only fire from the default branch** —
 merge to `main` to activate the daily cron (manual runs work from any branch via *Actions → Daily
@@ -44,21 +44,21 @@ market data → Run workflow*).
 ## Deploy (Vercel)
 
 1. vercel.com → **Add New… → Project** → Import `tejasjhamb67-dev/Klay-PMS`.
-2. Set **Root Directory = `app`** (framework auto-detects Next.js). Deploy.
+2. Framework auto-detects Next.js (the app lives at the repo root). Deploy.
 3. Every push then redeploys automatically — including the market-data bot's nightly snapshot
    commit, so the deployed app refreshes with each close.
 
 ## Run locally
 
 ```bash
-cd app
+
 npm install
 npm run dev     # http://localhost:3000
 ```
 
 ## Branding
 
-Placeholder palette (deep navy + gold on ivory) lives in `app/src/app/globals.css` (`:root` tokens) and `app/src/lib/theme.ts`. Swap those two files' values for the official Klay deck colors — nothing else changes. Chart colors are validated for colorblind safety; re-validate after swapping.
+Placeholder palette (deep navy + gold on ivory) lives in `src/app/globals.css` (`:root` tokens) and `src/lib/theme.ts`. Swap those two files' values for the official Klay deck colors — nothing else changes. Chart colors are validated for colorblind safety; re-validate after swapping.
 
 ## Roadmap
 

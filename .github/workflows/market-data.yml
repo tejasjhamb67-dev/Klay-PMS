@@ -26,7 +26,7 @@ jobs:
         run: |
           git config user.name "klay-market-bot"
           git config user.email "actions@github.com"
-          git add app/public/data/market-snapshot.json
+          git add public/data/market-snapshot.json
           if git diff --cached --quiet; then
             echo "No change in snapshot"
           else
