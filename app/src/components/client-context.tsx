@@ -3,6 +3,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { CLIENTS, DEFAULT_CLIENT_ID, getClient } from "@/lib/data/clients";
 import { ClientProfile } from "@/lib/finance/types";
+import { useMarket } from "./market-context";
 
 interface ClientContextValue {
   client: ClientProfile;
@@ -37,5 +38,8 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 export function useClient(): ClientContextValue {
   const ctx = useContext(ClientContext);
   if (!ctx) throw new Error("useClient must be used inside ClientProvider");
+  // Subscribe every consumer to market data too: when the daily snapshot
+  // loads and swaps the active assumptions, all pages recompute.
+  useMarket();
   return ctx;
 }

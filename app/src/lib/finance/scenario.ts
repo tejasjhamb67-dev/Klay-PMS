@@ -1,4 +1,4 @@
-import { ASSUMPTIONS } from "./assumptions";
+import { getAssumptions } from "./assumptions";
 import { medianValueAt, portfolioStats } from "./engine";
 import { SLEEVE_IDS, SleeveId, Weights } from "./types";
 
@@ -301,7 +301,7 @@ function marginalCost(
   target: Weights,
   yearsInvested: number
 ): number {
-  const a = ASSUMPTIONS[sleeve];
+  const a = getAssumptions()[sleeve];
   const growthForegone = Math.exp(a.expectedReturn * yearsInvested) - 1;
   const friction = a.exitCost + a.illiquidity * 0.03;
   const weightNow = total > 0 ? values[sleeve] / total : 0;
@@ -360,7 +360,7 @@ export function planLiquidity(input: LiquidityPlanInput): LiquidityPlan {
       amount: amt,
       share: weightsBefore[s],
       costPerRupee:
-        Math.exp(ASSUMPTIONS[s].expectedReturn * yearsInvested) - 1 + ASSUMPTIONS[s].exitCost + ASSUMPTIONS[s].illiquidity * 0.03,
+        Math.exp(getAssumptions()[s].expectedReturn * yearsInvested) - 1 + getAssumptions()[s].exitCost + getAssumptions()[s].illiquidity * 0.03,
     };
   });
 
@@ -374,11 +374,11 @@ export function planLiquidity(input: LiquidityPlanInput): LiquidityPlan {
   ) as Weights;
 
   const frictionOptimal = withdrawals.reduce(
-    (s, w) => s + w.amount * (ASSUMPTIONS[w.sleeve].exitCost + ASSUMPTIONS[w.sleeve].illiquidity * 0.03),
+    (s, w) => s + w.amount * (getAssumptions()[w.sleeve].exitCost + getAssumptions()[w.sleeve].illiquidity * 0.03),
     0
   );
   const frictionNaive = naive.reduce(
-    (s, w) => s + w.amount * (ASSUMPTIONS[w.sleeve].exitCost + ASSUMPTIONS[w.sleeve].illiquidity * 0.03),
+    (s, w) => s + w.amount * (getAssumptions()[w.sleeve].exitCost + getAssumptions()[w.sleeve].illiquidity * 0.03),
     0
   );
 
@@ -391,7 +391,7 @@ export function planLiquidity(input: LiquidityPlanInput): LiquidityPlan {
     const shortfallRisk = stats.volatility * Math.sqrt(input.horizon);
     if (shortfallRisk > 0.05) {
       reserveAdvice = {
-        moveNow: raise / Math.exp(ASSUMPTIONS.cash.expectedReturn * input.horizon),
+        moveNow: raise / Math.exp(getAssumptions().cash.expectedReturn * input.horizon),
         fundFrom: withdrawals.map((w) => w.sleeve).filter((s) => s !== "cash" && s !== "fixedIncome"),
       };
     }
@@ -467,7 +467,7 @@ export interface LifeEventInput {
 
 export function planLifeEvent(input: LifeEventInput): EventPlan {
   const total = SLEEVE_IDS.reduce((s, id) => s + input.values[id], 0);
-  const cashRate = ASSUMPTIONS.cash.expectedReturn;
+  const cashRate = getAssumptions().cash.expectedReturn;
 
   const tranches: TranchePlanRow[] = [];
   let sellNow = 0;

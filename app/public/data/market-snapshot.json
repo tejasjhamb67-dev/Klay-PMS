@@ -1,0 +1,33 @@
+{
+  "asOf": "2026-07-02",
+  "generatedAt": "2026-07-02T13:45:00.000Z",
+  "source": "fixture",
+  "raw": {
+    "nifty": { "level": 26840, "dayChangePct": 0.42 },
+    "niftyPe": 22.9,
+    "niftyDivYield": 0.0116,
+    "gsec10Y": 0.0662,
+    "tbill": 0.06,
+    "cpiYoY": 0.043,
+    "usdInr": { "level": 88.6, "dayChangePct": 0.11 },
+    "goldEtf": { "level": 82.4, "dayChangePct": 0.3 }
+  },
+  "derived": {
+    "sleeves": {
+      "equities": { "expectedReturn": 0.1157, "volatility": 0.158 },
+      "fixedIncome": { "expectedReturn": 0.0712, "volatility": 0.045 },
+      "alternatives": { "expectedReturn": 0.1407, "volatility": 0.2 },
+      "tactical": { "expectedReturn": 0.085, "volatility": 0.165 },
+      "cash": { "expectedReturn": 0.06, "volatility": 0.005 }
+    },
+    "notes": [
+      "SEED FIXTURE — replaced by the first live GitHub Actions run.",
+      "equities: divYield 1.16% + nominal growth (CPI 4.3% + real 6.5%) + valuation reversion −0.39% (P/E 22.9 vs 22.0 prior, amortised 10y) = 11.57%",
+      "fixedIncome: 10Y G-sec 6.62% + AAA spread 0.70% − default drag 0.20% = 7.12%",
+      "cash: 91-day T-bill 6.00%",
+      "tactical: 60% gold block (CPI 4.3% + real gold 1.5% + FX drift 0.70%) + 40% opportunistic prior 11.5% = 8.50%",
+      "alternatives: equities 11.57% + illiquidity/access premium 2.50% = 14.07%",
+      "vols: EWMA(0.97) shrunk 50/50 to priors (fixture uses priors)"
+    ]
+  }
+}

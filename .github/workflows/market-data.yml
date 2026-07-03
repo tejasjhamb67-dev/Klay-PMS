@@ -1,0 +1,35 @@
+name: Daily market data
+
+on:
+  schedule:
+    # 13:33 UTC = 19:03 IST, Mon-Fri, after Indian market official closes
+    - cron: "33 13 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch closes and derive assumptions
+        run: node scripts/fetch-market-data.mjs
+
+      - name: Commit snapshot if changed
+        run: |
+          git config user.name "klay-market-bot"
+          git config user.email "actions@github.com"
+          git add app/public/data/market-snapshot.json
+          if git diff --cached --quiet; then
+            echo "No change in snapshot"
+          else
+            git commit -m "Market snapshot $(date -u +%F)"
+            git push
+          fi

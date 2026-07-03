@@ -2,8 +2,10 @@ import { SleeveAssumption, SleeveId, SleeveMeta } from "./types";
 
 /**
  * Long-run nominal capital market assumptions (INR).
- * These are the single source of truth for every projection in the app —
- * replace with Klay's official IC assumptions when available.
+ * These are the FALLBACK PRIOR for every projection in the app. When the
+ * daily market snapshot loads, MarketProvider swaps in live-derived numbers
+ * via setActiveAssumptions(); a dead feed can never blank a screen.
+ * Precedence: IC overrides > daily snapshot > these priors.
  */
 export const ASSUMPTIONS: Record<SleeveId, SleeveAssumption> = {
   equities: {
@@ -47,6 +49,20 @@ export const ASSUMPTIONS: Record<SleeveId, SleeveAssumption> = {
     ratesBeta: 0.002,
   },
 };
+
+// ---- Active assumptions store (static prior until live data loads) ----
+
+let ACTIVE: Record<SleeveId, SleeveAssumption> = ASSUMPTIONS;
+
+/** Called by MarketProvider once the daily snapshot is fetched & merged. */
+export function setActiveAssumptions(next: Record<SleeveId, SleeveAssumption>): void {
+  ACTIVE = next;
+}
+
+/** Every engine computation reads assumptions through this. */
+export function getAssumptions(): Record<SleeveId, SleeveAssumption> {
+  return ACTIVE;
+}
 
 /** Sleeve-level correlation matrix, order = SLEEVE_IDS. */
 export const CORRELATIONS: number[][] = [

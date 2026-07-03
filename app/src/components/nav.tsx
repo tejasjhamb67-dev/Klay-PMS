@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClient } from "./client-context";
+import { useMarket } from "./market-context";
 import { totalValue } from "@/lib/finance/engine";
 import { inr } from "@/lib/finance/format";
 
@@ -55,10 +56,39 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <MarketRibbon />
       <div className="px-6 py-5 border-t border-white/10 text-[11px] leading-relaxed opacity-50">
         Illustrative projections, not guarantees. Investments are subject to market risk. SEBI-registered portfolio
         manager.
       </div>
     </aside>
+  );
+}
+
+function MarketRibbon() {
+  const { snapshot } = useMarket();
+  if (!snapshot) return null;
+  const { raw } = snapshot;
+  const asOf = new Date(snapshot.asOf).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  const chip = (delta: number) => (
+    <span className={delta >= 0 ? "text-emerald-400" : "text-red-400"}>
+      {delta >= 0 ? "+" : "−"}{Math.abs(delta).toFixed(1)}%
+    </span>
+  );
+  return (
+    <div className="px-6 py-4 border-t border-white/10 text-xs">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] uppercase tracking-[0.18em] opacity-50">Markets · {asOf} close</span>
+        {snapshot.source === "fixture" && (
+          <span className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-white/10 opacity-70">seed</span>
+        )}
+      </div>
+      <div className="space-y-1.5 opacity-90 tnum">
+        <div className="flex justify-between"><span className="opacity-60">Nifty 50</span><span>{raw.nifty.level.toLocaleString("en-IN")} {chip(raw.nifty.dayChangePct)}</span></div>
+        <div className="flex justify-between"><span className="opacity-60">10Y G-sec</span><span>{(raw.gsec10Y * 100).toFixed(2)}%</span></div>
+        <div className="flex justify-between"><span className="opacity-60">CPI (YoY)</span><span>{(raw.cpiYoY * 100).toFixed(1)}%</span></div>
+        <div className="flex justify-between"><span className="opacity-60">USD/INR</span><span>{raw.usdInr.level.toFixed(2)} {chip(raw.usdInr.dayChangePct)}</span></div>
+      </div>
+    </div>
   );
 }

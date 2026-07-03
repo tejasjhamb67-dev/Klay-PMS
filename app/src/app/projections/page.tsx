@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { FanChart, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
 import { useClient } from "@/components/client-context";
-import { ASSUMPTIONS, SLEEVES } from "@/lib/finance/assumptions";
+import { getAssumptions, SLEEVES } from "@/lib/finance/assumptions";
 import { currentWeights, portfolioStats, projectWealth, sleeveGrowthRates, totalValue } from "@/lib/finance/engine";
 import { inr, pct } from "@/lib/finance/format";
 import { SLEEVE_IDS } from "@/lib/finance/types";
@@ -129,7 +129,7 @@ export default function ProjectionsPage() {
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-ink3 mt-0.5 pl-[18px]">
                   <span>{SLEEVES[s].description}</span>
-                  <span className="tnum shrink-0 ml-3">plan: {pct(ASSUMPTIONS[s].expectedReturn)}</span>
+                  <span className="tnum shrink-0 ml-3">plan: {pct(getAssumptions()[s].expectedReturn)}</span>
                 </div>
               </div>
             ))}

@@ -1,4 +1,4 @@
-import { ASSUMPTIONS, CORRELATIONS, RISK_FREE_RATE } from "./assumptions";
+import { CORRELATIONS, getAssumptions, RISK_FREE_RATE } from "./assumptions";
 import {
   ClientPortfolio,
   Holding,
@@ -47,12 +47,12 @@ export function portfolioCagr(holdings: Holding[]): number {
 /** Full covariance-based stats for any weight vector. */
 export function portfolioStats(weights: Weights): PortfolioStats {
   const w = SLEEVE_IDS.map((s) => weights[s] ?? 0);
-  const er = SLEEVE_IDS.reduce((s, id, i) => s + w[i] * ASSUMPTIONS[id].expectedReturn, 0);
+  const er = SLEEVE_IDS.reduce((s, id, i) => s + w[i] * getAssumptions()[id].expectedReturn, 0);
   let variance = 0;
   for (let i = 0; i < SLEEVE_IDS.length; i++) {
     for (let j = 0; j < SLEEVE_IDS.length; j++) {
       variance +=
-        w[i] * w[j] * CORRELATIONS[i][j] * ASSUMPTIONS[SLEEVE_IDS[i]].volatility * ASSUMPTIONS[SLEEVE_IDS[j]].volatility;
+        w[i] * w[j] * CORRELATIONS[i][j] * getAssumptions()[SLEEVE_IDS[i]].volatility * getAssumptions()[SLEEVE_IDS[j]].volatility;
     }
   }
   const vol = Math.sqrt(Math.max(variance, 0));
@@ -76,7 +76,7 @@ export function riskContributions(weights: Weights): Record<SleeveId, number> {
   const contrib: number[] = SLEEVE_IDS.map((_, i) => {
     let cov = 0;
     for (let j = 0; j < SLEEVE_IDS.length; j++) {
-      cov += w[j] * CORRELATIONS[i][j] * ASSUMPTIONS[SLEEVE_IDS[i]].volatility * ASSUMPTIONS[SLEEVE_IDS[j]].volatility;
+      cov += w[j] * CORRELATIONS[i][j] * getAssumptions()[SLEEVE_IDS[i]].volatility * getAssumptions()[SLEEVE_IDS[j]].volatility;
     }
     return w[i] * cov;
   });

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClientProvider } from "@/components/client-context";
+import { MarketProvider } from "@/components/market-context";
 import { Sidebar } from "@/components/nav";
 
 export const metadata: Metadata = {
@@ -16,12 +17,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <ClientProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 min-w-0 px-8 py-8 max-w-6xl">{children}</main>
-          </div>
-        </ClientProvider>
+        <MarketProvider>
+          <ClientProvider>
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <main className="flex-1 min-w-0 px-8 py-8 max-w-6xl">{children}</main>
+            </div>
+          </ClientProvider>
+        </MarketProvider>
       </body>
     </html>
   );

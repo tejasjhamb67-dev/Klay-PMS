@@ -30,6 +30,24 @@ app/                      Next.js 15 + TypeScript + Tailwind v4 + Recharts
 
 All computation currently runs client-side against a demo portfolio. The engine is deliberately separated from the UI so a real data layer (custodian/fund-accounting feed, auth, per-client API) can replace `lib/data` without touching the product.
 
+## Live market data
+
+`scripts/fetch-market-data.mjs` runs in GitHub Actions every trading day at 19:03 IST
+(`.github/workflows/market-data.yml`): it pulls closes from Yahoo Finance (Stooq/FRED/NSE fallbacks),
+derives forward-looking expected returns per sleeve (building-block method — see
+`docs/MARKET-DATA-ARCHITECTURE.md`), validates, and commits `app/public/data/market-snapshot.json`.
+The app merges the snapshot over the static priors at load; if the feed is stale or missing, the
+priors keep every screen alive. **Note: scheduled workflows only fire from the default branch** —
+merge to `main` to activate the daily cron (manual runs work from any branch via *Actions → Daily
+market data → Run workflow*).
+
+## Deploy (Vercel)
+
+1. vercel.com → **Add New… → Project** → Import `tejasjhamb67-dev/Klay-PMS`.
+2. Set **Root Directory = `app`** (framework auto-detects Next.js). Deploy.
+3. Every push then redeploys automatically — including the market-data bot's nightly snapshot
+   commit, so the deployed app refreshes with each close.
+
 ## Run locally
 
 ```bash
