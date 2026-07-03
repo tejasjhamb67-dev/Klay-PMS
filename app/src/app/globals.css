@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/*
+ * Klay brand tokens — extracted from the April 2026 marketing deck:
+ * dark indigo #181530 / #120D2D, navy #002454, Klay blue #006AF4,
+ * secondary accents teal #00998A · pink #EF4888 · orange #FF7E4C.
+ */
+:root {
+  --page: #f7f7f9;
+  --surface: #ffffff;
+  --surface-raised: #fbfbfd;
+  --ink: #14121f;
+  --ink-secondary: #4c4a5c;
+  --ink-muted: #8a8899;
+  --hairline: #e6e5ee;
+  --hairline-strong: #d0cfdd;
+  --brand-navy: #181530;
+  --brand-navy-ink: #f0eff8;
+  --brand-accent: #006af4;
+  --brand-accent-soft: #e5efff;
+  --good: #0e7a0e;
+  --bad: #c03535;
+
+  --eq: #006af4;
+  --fi: #00998a;
+  --alt: #ef4888;
+  --tac: #ff7e4c;
+  --cash: #878b95;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #120d2d;
+    --surface: #1a1636;
+    --surface-raised: #232045;
+    --ink: #f4f3fa;
+    --ink-secondary: #c5c3d4;
+    --ink-muted: #918fa6;
+    --hairline: #2b2750;
+    --hairline-strong: #3b3766;
+    --brand-navy: #181530;
+    --brand-navy-ink: #f0eff8;
+    --brand-accent: #3d8bff;
+    --brand-accent-soft: #12244d;
+    --good: #35b04a;
+    --bad: #e05c5c;
+
+    --eq: #3d8bff;
+    --fi: #009184;
+    --alt: #e85387;
+    --tac: #e2602f;
+    --cash: #9a97a8;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink-secondary);
+  --color-ink3: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-hairline2: var(--hairline-strong);
+  --color-navy: var(--brand-navy);
+  --color-navyink: var(--brand-navy-ink);
+  --color-accent: var(--brand-accent);
+  --color-accentsoft: var(--brand-accent-soft);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.font-display {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Range sliders used in the Rebalancing Studio */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hairline-strong);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  border: 2px solid var(--surface-raised);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  border: 2px solid var(--surface-raised);
+  cursor: pointer;
+}
