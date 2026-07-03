@@ -2,7 +2,7 @@
 
 import { AllocationDonut, SleeveLegend, StackedWeightBar, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
-import { DEMO_CLIENT } from "@/lib/data/client";
+import { useClient } from "@/components/client-context";
 import { SLEEVES } from "@/lib/finance/assumptions";
 import {
   currentWeights,
@@ -17,7 +17,7 @@ import { SLEEVE_IDS } from "@/lib/finance/types";
 
 export default function OverviewPage() {
   const theme = useTheme();
-  const portfolio = DEMO_CLIENT;
+  const { client: portfolio } = useClient();
   const total = totalValue(portfolio.holdings);
   const invested = portfolio.holdings.reduce((s, h) => s + h.invested, 0);
   const values = sleeveValues(portfolio.holdings);
@@ -30,8 +30,13 @@ export default function OverviewPage() {
     <div>
       <PageHeader
         title={portfolio.clientName}
-        subtitle={`Relationship since ${new Date(portfolio.relationshipSince).getFullYear()} · All figures as of today, in INR.`}
+        subtitle={`${portfolio.mandate} · Horizon: ${portfolio.horizon} · All figures in INR.`}
       />
+
+      <div className="border-l-2 border-accent bg-accentsoft/40 rounded-r-md px-4 py-3 mb-6 max-w-3xl">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-ink3 mb-0.5">Investment thesis — Klay IC</div>
+        <p className="text-sm text-ink2 leading-relaxed">{portfolio.thesis}</p>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatTile label="Portfolio value" value={inr(total)} delta={`${inr(total - invested, { signed: true })} since inception`} deltaGood={total >= invested} />
@@ -56,7 +61,7 @@ export default function OverviewPage() {
                   <div>
                     <div className="text-sm text-ink">{SLEEVES[s].label}</div>
                     <div className="text-[11px] text-ink3">
-                      {pct(weights[s], 1)} of portfolio · target {pct(portfolio.targetWeights[s], 0)}
+                      {pct(weights[s], 1)} of portfolio · proposed {pct(portfolio.targetWeights[s], 0)}
                     </div>
                   </div>
                 </div>
@@ -70,7 +75,7 @@ export default function OverviewPage() {
           <div className="mt-4">
             <div className="text-[11px] uppercase tracking-wide text-ink3 mb-1.5">Current mix</div>
             <StackedWeightBar weights={weights} labelInBar />
-            <div className="text-[11px] uppercase tracking-wide text-ink3 mb-1.5 mt-3">Mandate target</div>
+            <div className="text-[11px] uppercase tracking-wide text-ink3 mb-1.5 mt-3">Klay proposed (IPS)</div>
             <StackedWeightBar weights={portfolio.targetWeights} labelInBar />
           </div>
         </Card>
@@ -112,7 +117,7 @@ export default function OverviewPage() {
           </table>
         </div>
         <Disclaimer>
-          Values shown are for the demo relationship. CAGR is since inception of each strategy, net of underlying fund
+          Hypothetical relationship for demonstration. CAGR is since inception of each strategy, net of underlying fund
           expenses, gross of advisory fees.
         </Disclaimer>
       </Card>

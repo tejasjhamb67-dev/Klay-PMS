@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SleeveLegend, StackedWeightBar, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader } from "@/components/ui";
-import { DEMO_CLIENT } from "@/lib/data/client";
+import { useClient } from "@/components/client-context";
 import { SLEEVES } from "@/lib/finance/assumptions";
 import { currentWeights, totalValue } from "@/lib/finance/engine";
 import { inr, pct } from "@/lib/finance/format";
@@ -12,14 +12,14 @@ import { SLEEVE_IDS, SleeveId, Weights } from "@/lib/finance/types";
 
 export default function RebalancePage() {
   const theme = useTheme();
-  const portfolio = DEMO_CLIENT;
+  const { client: portfolio } = useClient();
   const total = totalValue(portfolio.holdings);
   const current = useMemo(() => currentWeights(portfolio), [portfolio]);
 
   const presets: { label: string; weights: Weights }[] = useMemo(
     () => [
       { label: "Current", weights: current },
-      { label: "Mandate target", weights: portfolio.targetWeights },
+      { label: "Klay proposed", weights: portfolio.targetWeights },
       {
         label: "Defensive",
         weights: { equities: 0.3, fixedIncome: 0.45, alternatives: 0.1, tactical: 0.05, cash: 0.1 },
@@ -33,6 +33,8 @@ export default function RebalancePage() {
   );
 
   const [proposed, setProposed] = useState<Weights>({ ...current });
+  // reset the sliders when the selected client changes
+  useEffect(() => setProposed({ ...current }), [portfolio.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const cmp = useMemo(() => compareRebalance(total, current, proposed), [total, current, proposed]);
   const tenYear = cmp.horizons.find((h) => h.years === 10)!;
 

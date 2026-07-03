@@ -53,6 +53,17 @@ export interface ClientPortfolio {
 /** Weights by sleeve, summing to 1. */
 export type Weights = Record<SleeveId, number>;
 
+/** A client relationship as shown in the portal, sourced from IC notes. */
+export interface ClientProfile extends ClientPortfolio {
+  id: string;
+  /** Mandate label, e.g. "Pre-Exit Business Owner" */
+  mandate: string;
+  /** Human-readable horizon, e.g. "6–7 years (pre-exit)" */
+  horizon: string;
+  /** One-line investment thesis from the IC note */
+  thesis: string;
+}
+
 export interface PortfolioStats {
   expectedReturn: number; // arithmetic
   geometricReturn: number; // ~ arithmetic - vol^2/2, used for compounding

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { HBar, SleeveLegend, StackedWeightBar, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader } from "@/components/ui";
-import { DEMO_CLIENT } from "@/lib/data/client";
+import { useClient } from "@/components/client-context";
 import { SLEEVES } from "@/lib/finance/assumptions";
 import { sleeveValues, totalValue } from "@/lib/finance/engine";
 import { inr, parseInr, pct } from "@/lib/finance/format";
@@ -18,7 +18,7 @@ const QUICK_EVENTS = [
 
 export default function ScenariosPage() {
   const theme = useTheme();
-  const portfolio = DEMO_CLIENT;
+  const { client: portfolio } = useClient();
   const total = totalValue(portfolio.holdings);
   const values = useMemo(() => sleeveValues(portfolio.holdings), [portfolio]);
 
@@ -63,7 +63,7 @@ export default function ScenariosPage() {
               value={amountText}
               onChange={(e) => setAmountText(e.target.value)}
               placeholder="e.g. 80L or 1.5cr"
-              className="bg-raised border border-hairline2 rounded-md px-3 py-2 text-sm text-ink w-40 tnum outline-none focus:border-gold"
+              className="bg-raised border border-hairline2 rounded-md px-3 py-2 text-sm text-ink w-40 tnum outline-none focus:border-accent"
             />
             <div className="text-[11px] text-ink3 mt-1 tnum">{amount > 0 ? `= ${inr(amount)}` : "Use L / Cr shorthand"}</div>
           </div>
@@ -162,7 +162,7 @@ export default function ScenariosPage() {
                 </div>
 
                 {plan.reserveAdvice && (
-                  <div className="rounded-md px-4 py-3 mt-4 text-sm border border-gold/40 bg-goldsoft/40 text-ink">
+                  <div className="rounded-md px-4 py-3 mt-4 text-sm border border-accent/40 bg-accentsoft/40 text-ink">
                     <div className="font-semibold mb-1">Since you need this in {horizon} year{horizon > 1 ? "s" : ""}, not today:</div>
                     Move {inr(plan.reserveAdvice.moveNow)} into liquid & short-duration funds now. It grows safely to
                     your {inr(amount)} by the date you need it, and the money stops riding equity swings — a market

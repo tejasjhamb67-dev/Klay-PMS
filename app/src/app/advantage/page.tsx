@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { HBar, TooltipShell, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
-import { DEMO_CLIENT } from "@/lib/data/client";
+import { useClient } from "@/components/client-context";
 import { klayAdvantage } from "@/lib/finance/advantage";
 import { currentWeights, totalValue } from "@/lib/finance/engine";
 import { inr, inrAxis, pct } from "@/lib/finance/format";
@@ -22,7 +22,7 @@ const HORIZONS = [5, 10, 15, 20, 25];
 
 export default function AdvantagePage() {
   const theme = useTheme();
-  const portfolio = DEMO_CLIENT;
+  const { client: portfolio } = useClient();
   const total = totalValue(portfolio.holdings);
   const weights = useMemo(() => currentWeights(portfolio), [portfolio]);
   const [years, setYears] = useState(15);
@@ -87,7 +87,7 @@ export default function AdvantagePage() {
               width={64}
             />
             <Area dataKey="gapBand" fill={theme.band} stroke="none" isAnimationActive={false} />
-            <Line dataKey="klay" stroke={theme.gold} strokeWidth={2.5} dot={false} isAnimationActive={false} name="With Klay" />
+            <Line dataKey="klay" stroke={theme.accent} strokeWidth={2.5} dot={false} isAnimationActive={false} name="With Klay" />
             <Line dataKey="diy" stroke={theme.inkMuted} strokeWidth={2} strokeDasharray="5 4" dot={false} isAnimationActive={false} name="DIY" />
             <Tooltip
               content={({ active, payload, label }) => {
@@ -97,7 +97,7 @@ export default function AdvantagePage() {
                   <TooltipShell
                     title={`Year ${label}`}
                     rows={[
-                      { dot: theme.gold, label: "With Klay", value: inr(p.klay) },
+                      { dot: theme.accent, label: "With Klay", value: inr(p.klay) },
                       { dot: theme.inkMuted, label: "DIY", value: inr(p.diy) },
                       { label: "Advantage", value: inr(p.gap, { signed: true }) },
                       { label: "Cumulative Klay fees", value: inr(p.feesPaid) },
@@ -109,7 +109,7 @@ export default function AdvantagePage() {
           </ComposedChart>
         </ResponsiveContainer>
         <div className="flex gap-4 text-xs text-ink2 mt-1">
-          <span className="flex items-center"><span className="w-4 h-0.5 mr-1.5 rounded" style={{ background: theme.gold }} /> With Klay (net of 2% fee)</span>
+          <span className="flex items-center"><span className="w-4 h-0.5 mr-1.5 rounded" style={{ background: theme.accent }} /> With Klay (net of 2% fee)</span>
           <span className="flex items-center"><span className="w-4 border-t-2 border-dashed mr-1.5" style={{ borderColor: theme.inkMuted }} /> Do-it-yourself</span>
         </div>
       </Card>
@@ -124,7 +124,7 @@ export default function AdvantagePage() {
                 label={c.label}
                 value={c.value}
                 max={maxComponent}
-                color={c.kind === "fee" ? theme.bad : theme.gold}
+                color={c.kind === "fee" ? theme.bad : theme.accent}
                 valueLabel={pct(c.value, 1, { signed: true })}
               />
             ))}

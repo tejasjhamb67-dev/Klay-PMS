@@ -1,55 +1,55 @@
 @import "tailwindcss";
 
 /*
- * Klay brand tokens — placeholder palette in the spirit of a legacy PMS house
- * (deep navy + muted gold on warm ivory). Swap the values in this block when
- * the official marketing-deck colors land; nothing else needs to change.
+ * Klay brand tokens — extracted from the April 2026 marketing deck:
+ * dark indigo #181530 / #120D2D, navy #002454, Klay blue #006AF4,
+ * secondary accents teal #00998A · pink #EF4888 · orange #FF7E4C.
  */
 :root {
-  --page: #f6f5f1;
-  --surface: #fdfcfa;
-  --surface-raised: #ffffff;
-  --ink: #14171c;
-  --ink-secondary: #565349;
-  --ink-muted: #8a877f;
-  --hairline: #e3e1d8;
-  --hairline-strong: #c9c6bb;
-  --brand-navy: #0e2038;
-  --brand-navy-ink: #f2efe6;
-  --brand-gold: #b08a2e;
-  --brand-gold-soft: #f0e6cd;
+  --page: #f7f7f9;
+  --surface: #ffffff;
+  --surface-raised: #fbfbfd;
+  --ink: #14121f;
+  --ink-secondary: #4c4a5c;
+  --ink-muted: #8a8899;
+  --hairline: #e6e5ee;
+  --hairline-strong: #d0cfdd;
+  --brand-navy: #181530;
+  --brand-navy-ink: #f0eff8;
+  --brand-accent: #006af4;
+  --brand-accent-soft: #e5efff;
   --good: #0e7a0e;
   --bad: #c03535;
 
-  --eq: #2a78d6;
-  --fi: #1baf7a;
-  --alt: #4a3aa7;
-  --tac: #eda100;
-  --cash: #898781;
+  --eq: #006af4;
+  --fi: #00998a;
+  --alt: #ef4888;
+  --tac: #ff7e4c;
+  --cash: #878b95;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #0b1420;
-    --surface: #101c2e;
-    --surface-raised: #16243a;
-    --ink: #f4f3ee;
-    --ink-secondary: #c3c2b7;
-    --ink-muted: #8f9aa8;
-    --hairline: #22334c;
-    --hairline-strong: #33465f;
-    --brand-navy: #0e2038;
-    --brand-navy-ink: #f2efe6;
-    --brand-gold: #d4af4e;
-    --brand-gold-soft: #2c2613;
+    --page: #120d2d;
+    --surface: #1a1636;
+    --surface-raised: #232045;
+    --ink: #f4f3fa;
+    --ink-secondary: #c5c3d4;
+    --ink-muted: #918fa6;
+    --hairline: #2b2750;
+    --hairline-strong: #3b3766;
+    --brand-navy: #181530;
+    --brand-navy-ink: #f0eff8;
+    --brand-accent: #3d8bff;
+    --brand-accent-soft: #12244d;
     --good: #35b04a;
     --bad: #e05c5c;
 
-    --eq: #3987e5;
-    --fi: #199e70;
-    --alt: #9085e9;
-    --tac: #c98500;
-    --cash: #9a978f;
+    --eq: #3d8bff;
+    --fi: #009184;
+    --alt: #e85387;
+    --tac: #e2602f;
+    --cash: #9a97a8;
   }
 }
 
@@ -64,8 +64,8 @@
   --color-hairline2: var(--hairline-strong);
   --color-navy: var(--brand-navy);
   --color-navyink: var(--brand-navy-ink);
-  --color-gold: var(--brand-gold);
-  --color-goldsoft: var(--brand-gold-soft);
+  --color-accent: var(--brand-accent);
+  --color-accentsoft: var(--brand-accent-soft);
   --color-good: var(--good);
   --color-bad: var(--bad);
   --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -102,7 +102,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--brand-gold);
+  background: var(--brand-accent);
   border: 2px solid var(--surface-raised);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   cursor: pointer;
@@ -111,7 +111,7 @@ input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--brand-gold);
+  background: var(--brand-accent);
   border: 2px solid var(--surface-raised);
   cursor: pointer;
 }

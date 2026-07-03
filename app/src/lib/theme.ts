@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { SleeveId } from "./finance/types";
 
 /** Chart colors need concrete hex values (Recharts can't read CSS vars in all
- *  props), so we mirror the globals.css tokens here per color scheme. Both
- *  palettes validated with the dataviz six-checks script. */
+ *  props), so we mirror the globals.css tokens here per color scheme. Palette
+ *  from the Klay marketing deck; both modes validated with the dataviz
+ *  six-checks script (light: worst adjacent CVD ΔE 15.7; dark: 14.4). */
 export interface ChartTheme {
   sleeve: Record<SleeveId, string>;
   ink: string;
@@ -14,7 +15,7 @@ export interface ChartTheme {
   grid: string;
   axis: string;
   surface: string;
-  gold: string;
+  accent: string;
   navy: string;
   good: string;
   bad: string;
@@ -23,35 +24,35 @@ export interface ChartTheme {
 }
 
 const LIGHT: ChartTheme = {
-  sleeve: { equities: "#2a78d6", fixedIncome: "#1baf7a", alternatives: "#4a3aa7", tactical: "#eda100", cash: "#898781" },
-  ink: "#14171c",
-  inkSecondary: "#565349",
-  inkMuted: "#8a877f",
-  grid: "#e3e1d8",
-  axis: "#c9c6bb",
-  surface: "#fdfcfa",
-  gold: "#b08a2e",
-  navy: "#0e2038",
+  sleeve: { equities: "#006af4", fixedIncome: "#00998a", alternatives: "#ef4888", tactical: "#ff7e4c", cash: "#878b95" },
+  ink: "#14121f",
+  inkSecondary: "#4c4a5c",
+  inkMuted: "#8a8899",
+  grid: "#e6e5ee",
+  axis: "#d0cfdd",
+  surface: "#ffffff",
+  accent: "#006af4",
+  navy: "#181530",
   good: "#0e7a0e",
   bad: "#c03535",
-  band: "rgba(42,120,214,0.16)",
-  bandOuter: "rgba(42,120,214,0.08)",
+  band: "rgba(0,106,244,0.14)",
+  bandOuter: "rgba(0,106,244,0.07)",
 };
 
 const DARK: ChartTheme = {
-  sleeve: { equities: "#3987e5", fixedIncome: "#199e70", alternatives: "#9085e9", tactical: "#c98500", cash: "#9a978f" },
-  ink: "#f4f3ee",
-  inkSecondary: "#c3c2b7",
-  inkMuted: "#8f9aa8",
-  grid: "#22334c",
-  axis: "#33465f",
-  surface: "#101c2e",
-  gold: "#d4af4e",
-  navy: "#0e2038",
+  sleeve: { equities: "#3d8bff", fixedIncome: "#009184", alternatives: "#e85387", tactical: "#e2602f", cash: "#9a97a8" },
+  ink: "#f4f3fa",
+  inkSecondary: "#c5c3d4",
+  inkMuted: "#918fa6",
+  grid: "#2b2750",
+  axis: "#3b3766",
+  surface: "#1a1636",
+  accent: "#3d8bff",
+  navy: "#181530",
   good: "#35b04a",
   bad: "#e05c5c",
-  band: "rgba(57,135,229,0.22)",
-  bandOuter: "rgba(57,135,229,0.10)",
+  band: "rgba(61,139,255,0.20)",
+  bandOuter: "rgba(61,139,255,0.09)",
 };
 
 export function useChartTheme(): ChartTheme {

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { FanChart, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
-import { DEMO_CLIENT } from "@/lib/data/client";
+import { useClient } from "@/components/client-context";
 import { ASSUMPTIONS, SLEEVES } from "@/lib/finance/assumptions";
 import { currentWeights, portfolioStats, projectWealth, sleeveGrowthRates, totalValue } from "@/lib/finance/engine";
 import { inr, pct } from "@/lib/finance/format";
@@ -13,7 +13,7 @@ const PRESETS = [1, 2, 5, 10, 20, 30];
 
 export default function ProjectionsPage() {
   const theme = useTheme();
-  const portfolio = DEMO_CLIENT;
+  const { client: portfolio } = useClient();
   const total = totalValue(portfolio.holdings);
   const weights = currentWeights(portfolio);
   const growth = sleeveGrowthRates(portfolio.holdings);
