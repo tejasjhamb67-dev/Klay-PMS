@@ -73,6 +73,23 @@ export interface Cashflow {
   contingent?: "salary" | "business" | null;
 }
 
+/** A financial goal the portfolio is meant to fund, from the IC trajectory. */
+export interface Goal {
+  id: string;
+  label: string;
+  targetAmount: number; // INR
+  targetYear: number; // years from now
+}
+
+/** IC-calibrated overrides for the Klay-alpha components (see advantage.ts). */
+export interface AlphaOverrides {
+  behaviourGap?: number;
+  diyProductDrag?: number;
+  rebalancingAlpha?: number;
+  accessAlpha?: number;
+  taxAlpha?: number;
+}
+
 /** A client relationship as shown in the portal, sourced from IC notes. */
 export interface ClientProfile extends ClientPortfolio {
   id: string;
@@ -84,6 +101,10 @@ export interface ClientProfile extends ClientPortfolio {
   thesis: string;
   /** Recurring inflows/outflows that shape the wealth path */
   cashflows: Cashflow[];
+  /** Goals tracked on the overview */
+  goals: Goal[];
+  /** Client-specific alpha components (IC-calibrated); merged over defaults */
+  advantage?: AlphaOverrides;
 }
 
 export interface PortfolioStats {

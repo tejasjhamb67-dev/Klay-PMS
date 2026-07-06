@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FanChart, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
 import { useClient } from "@/components/client-context";
+import { useMarket } from "@/components/market-context";
 import { getAssumptions, SLEEVES } from "@/lib/finance/assumptions";
 import {
   currentWeights,
@@ -21,6 +22,7 @@ const PRESETS = [1, 2, 5, 10, 20, 30];
 export default function ProjectionsPage() {
   const theme = useTheme();
   const { client: portfolio } = useClient();
+  const { overrides } = useMarket();
   const total = totalValue(portfolio.holdings);
   const weights = currentWeights(portfolio);
   const growth = sleeveGrowthRates(portfolio.holdings);
@@ -185,7 +187,17 @@ export default function ProjectionsPage() {
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-ink3 mt-0.5 pl-[18px]">
                   <span>{SLEEVES[s].description}</span>
-                  <span className="tnum shrink-0 ml-3">plan: {pct(getAssumptions()[s].expectedReturn)}</span>
+                  <span className="tnum shrink-0 ml-3">
+                    plan: {pct(getAssumptions()[s].expectedReturn)}
+                    {overrides?.sleeves?.[s] && (
+                      <span
+                        className="ml-1.5 text-[9px] uppercase tracking-wide px-1 py-0.5 rounded bg-accentsoft text-ink2 cursor-help"
+                        title={`${overrides.sleeves[s]?.note ?? "Pinned"} — ${overrides.sleeves[s]?.setBy ?? "IC"}, ${overrides.updatedAt}`}
+                      >
+                        IC pinned
+                      </span>
+                    )}
+                  </span>
                 </div>
               </div>
             ))}

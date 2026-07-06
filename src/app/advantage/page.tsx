@@ -14,7 +14,7 @@ import {
 import { HBar, TooltipShell, useTheme } from "@/components/charts";
 import { Card, CardTitle, Disclaimer, PageHeader, StatTile } from "@/components/ui";
 import { useClient } from "@/components/client-context";
-import { klayAdvantage } from "@/lib/finance/advantage";
+import { DEFAULT_ADVANTAGE, klayAdvantage } from "@/lib/finance/advantage";
 import { currentWeights, totalValue } from "@/lib/finance/engine";
 import { inr, inrAxis, pct } from "@/lib/finance/format";
 
@@ -27,7 +27,7 @@ export default function AdvantagePage() {
   const weights = useMemo(() => currentWeights(portfolio), [portfolio]);
   const [years, setYears] = useState(15);
 
-  const result = useMemo(() => klayAdvantage(total, weights, years), [total, weights, years]);
+  const result = useMemo(() => klayAdvantage(total, weights, years, { ...DEFAULT_ADVANTAGE, ...portfolio.advantage }), [total, weights, years, portfolio.advantage]);
   const last = result.points[result.points.length - 1];
   const maxComponent = Math.max(...result.components.map((c) => Math.abs(c.value)));
 
