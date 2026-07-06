@@ -37,7 +37,7 @@ export interface MacroShock {
 export const ZERO_SHOCK: MacroShock = { equity: 0, ratesBp: 0, inflationPp: 0, inrDepreciation: 0, liquidityCrunch: 0 };
 
 /** How each sleeve responds to each factor (immediate mark-to-market). */
-interface FactorBetas {
+export interface FactorBetas {
   equity: number; // per 1.00 broad-equity move
   per100bp: number; // per +100bp rates (duration effect)
   perPpInflation: number; // per +1pp inflation surprise
@@ -45,7 +45,7 @@ interface FactorBetas {
   liquidity: number; // per full-severity crunch
 }
 
-const BETAS: Record<SleeveId, FactorBetas> = {
+export const BETAS: Record<SleeveId, FactorBetas> = {
   // Listed equity: full market beta; hurt by rate spikes and inflation
   // surprises; mild net FX gain (exporters, global sleeve); sold hard in
   // liquidity crunches.

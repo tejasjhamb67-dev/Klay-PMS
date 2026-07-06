@@ -15,7 +15,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/data/market-snapshot.json", { cache: "no-store" })
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/data/market-snapshot.json`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((snap: MarketSnapshot | null) => {
         if (!snap || cancelled) return;
