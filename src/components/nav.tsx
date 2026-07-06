@@ -11,6 +11,7 @@ import { inr } from "@/lib/finance/format";
 
 const LINKS = [
   { href: "/", label: "Portfolio", sub: "At a glance" },
+  { href: "/markets", label: "Markets", sub: "Live right now" },
   { href: "/projections", label: "Growth & Projections", sub: "1–30 year outlook" },
   { href: "/rebalance", label: "Rebalancing Studio", sub: "Test a new mix" },
   { href: "/advantage", label: "The Klay Advantage", sub: "DIY vs advised" },
