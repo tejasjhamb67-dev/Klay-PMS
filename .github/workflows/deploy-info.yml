@@ -28,10 +28,18 @@ jobs:
               jq -r --arg id "$id" '.[] | "dep=\($id) state=\(.state) URL=\(.environment_url // "none") log=\(.target_url // "none")"'
           done
 
-      - name: Probe candidate public URLs
+      - name: Probe live-quote APIs for browser (CORS) usability
         run: |
-          for u in https://klay-pms-tj2.vercel.app https://tejasjhamb67-dev.github.io/Klay-PMS/; do
-            echo "== $u =="
-            curl -sI --max-time 15 "$u" | grep -iE "^(HTTP|location|set-cookie: _vercel)" || true
-            echo "final after redirects: HTTP $(curl -sL -o /dev/null -w '%{http_code} at %{url_effective}' --max-time 20 "$u")"
-          done
+          ORIGIN="https://tejasjhamb67-dev.github.io"
+          YURL="https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?range=1d&interval=5m"
+          probe () {
+            echo "== $1 =="
+            curl -s -D /tmp/h -o /tmp/b --max-time 20 -H "Origin: $ORIGIN" "$2" || true
+            grep -iE "^(HTTP|access-control-allow-origin)" /tmp/h || echo "(no CORS header)"
+            head -c 220 /tmp/b; echo; echo
+          }
+          probe "yahoo direct"        "$YURL"
+          probe "allorigins+yahoo"    "https://api.allorigins.win/raw?url=$(python3 -c "import urllib.parse;print(urllib.parse.quote('$YURL', safe=''))")"
+          probe "corsproxy.io+yahoo"  "https://corsproxy.io/?url=$(python3 -c "import urllib.parse;print(urllib.parse.quote('$YURL', safe=''))")"
+          probe "er-api USD"          "https://open.er-api.com/v6/latest/USD"
+          probe "allorigins+goldbees" "https://api.allorigins.win/raw?url=$(python3 -c "import urllib.parse;print(urllib.parse.quote('https://query1.finance.yahoo.com/v8/finance/chart/GOLDBEES.NS?range=1d&interval=15m', safe=''))")"
