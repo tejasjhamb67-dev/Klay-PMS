@@ -1,0 +1,11 @@
+{
+  "updatedAt": "2026-07-06",
+  "note": "Investment Committee pins. These take precedence over the daily snapshot AND the static priors. Every entry needs a note and an owner — this file is the audit trail.",
+  "sleeves": {
+    "alternatives": {
+      "expectedReturn": 0.14,
+      "note": "Capped pending Q2 AIF vintage marks review",
+      "setBy": "Klay IC"
+    }
+  }
+}
