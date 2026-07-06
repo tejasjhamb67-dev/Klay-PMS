@@ -11,6 +11,12 @@ import { ClientProfile } from "../finance/types";
 export const CLIENTS: ClientProfile[] = [
   {
     id: "arvind",
+    goals: [
+      { id: "g1", label: "Son's education secured", targetAmount: 3.6e6, targetYear: 2 },
+      { id: "g2", label: "Daughter's education secured", targetAmount: 3.0e6, targetYear: 3 },
+      { id: "g3", label: "Pre-exit corpus (IC trajectory)", targetAmount: 7.4e7, targetYear: 5 },
+    ],
+    advantage: { behaviourGap: 0.012, diyProductDrag: 0.005, accessAlpha: 0.003, rebalancingAlpha: 0.005, taxAlpha: 0.006 },
     cashflows: [
       { id: "cf1", label: "Director income — invested surplus", kind: "inflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.05, contingent: "business" },
       { id: "cf2", label: "Household expenses", kind: "outflow", amountPerYear: 2.2e6, startYear: 0, endYear: null, growthRate: 0.06 },
@@ -37,6 +43,11 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "suresh",
+    goals: [
+      { id: "g1", label: "Perpetuity threshold (IC: ₹85–95 Cr by Y5)", targetAmount: 8.5e8, targetYear: 5 },
+      { id: "g2", label: "Income machine — ₹1.2 Cr/yr covered 3×", targetAmount: 5.4e8, targetYear: 2 },
+    ],
+    advantage: { behaviourGap: 0.02, diyProductDrag: 0.01, accessAlpha: 0.008, rebalancingAlpha: 0.004, taxAlpha: 0.001 },
     cashflows: [
       { id: "cf1", label: "Family drawdown (0.7% WR)", kind: "outflow", amountPerYear: 3.6e6, startYear: 0, endYear: null, growthRate: 0.06 },
     ],
@@ -55,6 +66,10 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "karan",
+    goals: [
+      { id: "g1", label: "India-return corpus (IC: ₹6–7 Cr)", targetAmount: 6.5e7, targetYear: 10 },
+      { id: "g2", label: "Children's education ring-fence", targetAmount: 5.0e6, targetYear: 7 },
+    ],
     cashflows: [
       { id: "cf1", label: "AED salary savings — SIP", kind: "inflow", amountPerYear: 1.65e6, startYear: 0, endYear: null, growthRate: 0.08, contingent: "salary" },
       { id: "cf2", label: "Children's education (Years 7–8)", kind: "outflow", amountPerYear: 2.5e6, startYear: 7, endYear: 9, growthRate: 0 },
@@ -75,6 +90,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "priya",
+    goals: [
+      { id: "g1", label: "Financial independence corpus", targetAmount: 4.0e8, targetYear: 12 },
+    ],
     cashflows: [
       { id: "cf1", label: "USD salary savings — remitted", kind: "inflow", amountPerYear: 2.0e6, startYear: 0, endYear: null, growthRate: 0.07, contingent: "salary" },
     ],
@@ -94,6 +112,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "meena",
+    goals: [
+      { id: "g1", label: "Income security for 20+ years", targetAmount: 2.5e7, targetYear: 10 },
+    ],
     cashflows: [
       { id: "cf1", label: "Living expenses", kind: "outflow", amountPerYear: 1.2e6, startYear: 0, endYear: null, growthRate: 0.06 },
     ],
@@ -114,6 +135,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "bose",
+    goals: [
+      { id: "g1", label: "Legacy corpus for next generation", targetAmount: 2.0e8, targetYear: 15 },
+    ],
     cashflows: [
       { id: "cf1", label: "Lifestyle & gifting", kind: "outflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.05 },
     ],
@@ -134,6 +158,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "haresh",
+    goals: [
+      { id: "g1", label: "Off-business diversification corpus", targetAmount: 1.0e9, targetYear: 10 },
+    ],
     cashflows: [
       { id: "cf1", label: "Business dividends", kind: "inflow", amountPerYear: 1.5e7, startYear: 0, endYear: null, growthRate: 0.05, contingent: "business" },
       { id: "cf2", label: "Family office expenses", kind: "outflow", amountPerYear: 6.0e6, startYear: 0, endYear: null, growthRate: 0.06 },
@@ -156,6 +183,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "mehta",
+    goals: [
+      { id: "g1", label: "Perpetuity corpus at 2% distribution", targetAmount: 4.0e9, targetYear: 10 },
+    ],
     cashflows: [
       { id: "cf1", label: "Family distributions (2% WR)", kind: "outflow", amountPerYear: 4.0e7, startYear: 0, endYear: null, growthRate: 0.05 },
     ],
@@ -177,6 +207,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "ananya",
+    goals: [
+      { id: "g1", label: "₹10 Cr by 40", targetAmount: 1.0e8, targetYear: 10 },
+    ],
     cashflows: [
       { id: "cf1", label: "Salary savings", kind: "inflow", amountPerYear: 3.0e6, startYear: 0, endYear: null, growthRate: 0.1, contingent: "salary" },
       { id: "cf2", label: "ESOP vesting (4 more years)", kind: "inflow", amountPerYear: 2.5e6, startYear: 0, endYear: 4, growthRate: 0, contingent: "salary" },
@@ -198,6 +231,9 @@ export const CLIENTS: ClientProfile[] = [
   },
   {
     id: "arjun",
+    goals: [
+      { id: "g1", label: "Preserve corpus in real terms", targetAmount: 3.0e8, targetYear: 10 },
+    ],
     cashflows: [
       { id: "cf1", label: "Living expenses", kind: "outflow", amountPerYear: 5.0e6, startYear: 0, endYear: null, growthRate: 0.06 },
     ],

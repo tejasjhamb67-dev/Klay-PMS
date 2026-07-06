@@ -26,17 +26,34 @@ export interface MarketSnapshot {
   };
 }
 
-/** Merge live-derived return/risk onto the static priors (frictions, betas
- *  and liquidity characteristics always come from the priors/IC). */
-export function mergeAssumptions(snapshot: MarketSnapshot): Record<SleeveId, SleeveAssumption> {
+/** IC pins from public/data/ic-overrides.json — the top of the precedence
+ *  chain: IC overrides > daily snapshot > static priors. */
+export interface ICOverrides {
+  updatedAt: string;
+  note?: string;
+  sleeves: Partial<
+    Record<SleeveId, { expectedReturn?: number; volatility?: number; note?: string; setBy?: string }>
+  >;
+}
+
+/** Merge live-derived return/risk onto the static priors, then apply IC pins
+ *  on top (frictions, betas and liquidity always come from the priors/IC). */
+export function mergeAssumptions(
+  snapshot: MarketSnapshot | null,
+  overrides?: ICOverrides | null
+): Record<SleeveId, SleeveAssumption> {
   return Object.fromEntries(
-    SLEEVE_IDS.map((s) => [
-      s,
-      {
-        ...ASSUMPTIONS[s],
-        expectedReturn: snapshot.derived.sleeves[s]?.expectedReturn ?? ASSUMPTIONS[s].expectedReturn,
-        volatility: snapshot.derived.sleeves[s]?.volatility ?? ASSUMPTIONS[s].volatility,
-      },
-    ])
+    SLEEVE_IDS.map((s) => {
+      const pin = overrides?.sleeves?.[s];
+      return [
+        s,
+        {
+          ...ASSUMPTIONS[s],
+          expectedReturn:
+            pin?.expectedReturn ?? snapshot?.derived.sleeves[s]?.expectedReturn ?? ASSUMPTIONS[s].expectedReturn,
+          volatility: pin?.volatility ?? snapshot?.derived.sleeves[s]?.volatility ?? ASSUMPTIONS[s].volatility,
+        },
+      ];
+    })
   ) as Record<SleeveId, SleeveAssumption>;
 }
