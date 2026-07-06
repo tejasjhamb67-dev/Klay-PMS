@@ -30,7 +30,7 @@ jobs:
 
       - name: Probe candidate public URLs
         run: |
-          for u in https://klay-pms.vercel.app https://klay-pms-tj2.vercel.app https://klay-2b8b7d45z-tj2.vercel.app; do
+          for u in https://klay-pms-tj2.vercel.app https://tejasjhamb67-dev.github.io/Klay-PMS/; do
             echo "== $u =="
             curl -sI --max-time 15 "$u" | grep -iE "^(HTTP|location|set-cookie: _vercel)" || true
             echo "final after redirects: HTTP $(curl -sL -o /dev/null -w '%{http_code} at %{url_effective}' --max-time 20 "$u")"

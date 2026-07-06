@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import wordmark from "../../public/klay-wordmark.png";
 import { useClient } from "./client-context";
 import { useMarket } from "./market-context";
 import { totalValue } from "@/lib/finance/engine";
@@ -22,7 +23,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 shrink-0 bg-navy text-navyink flex flex-col min-h-screen sticky top-0 max-h-screen">
       <div className="px-6 pt-8 pb-5 border-b border-white/10">
-        <Image src="/klay-wordmark.png" alt="Klay" width={81} height={40} priority />
+        <Image src={wordmark} alt="Klay" width={81} height={40} priority />
         <div className="text-[11px] uppercase tracking-[0.22em] opacity-60 mt-2.5">Capital · Private Clients</div>
       </div>
       <div className="px-4 pt-4 pb-1">
